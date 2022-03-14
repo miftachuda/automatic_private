@@ -1,0 +1,4 @@
+node_modules/
+lastvalue.json
+schedule.json
+package-lock.json

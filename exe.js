@@ -190,8 +190,15 @@ async function fire() {
 var filtering = async function (state, unit, waktu, scanner, synctime) {
     if (state) {
         var nowschedule = lodash(schedule).filter({ "unit": unit, "shift": waktu, "status": "Running" }).value()
+        var filterchedule = nowschedule.filter(function (item) {
+            if (item.equipment.substring(0, 4) == '041T' || item.equipment.substring(0, 4) == "TAPP") {
+                console.log("tank")
+                return false
+            } else
+                return true;
+        })
+        var tosend = filterchedule.map(item => {
 
-        var tosend = nowschedule.map(item => {
             synctime = moment(synctime)
             function addSecond(date, second) {
                 return (date + (second * 1000))
@@ -230,7 +237,7 @@ var filtering = async function (state, unit, waktu, scanner, synctime) {
         tosendconcat = null
     }
 
-    return [tosendconcat, nowschedule]
+    return [tosendconcat, filterchedule]
 }
 
 var syncronize = async function (tosend, token) {
@@ -257,7 +264,7 @@ var syncronize = async function (tosend, token) {
 }
 var uploadscene = async function (state, unit, waktu, scanner, synctime, token) {
     var resultdata = await filtering(state, unit, waktu, scanner, synctime)
-
+    console.log(resultdata[1])
     if (resultdata[1] != null && resultdata[0] != null) {
         sync = await inquirer
             .prompt([
@@ -290,7 +297,7 @@ var runit = async function () {
     }
     await getInput()
     var statentoken = await fire()
-    var date = moment().format("YYYY-MM-DD").toString;
+    var date = moment().format("YYYY-MM-DD").toString();
     var waktuarr;
     var synctimearr;
     async function asyncForEach(array, callback) {
@@ -305,7 +312,7 @@ var runit = async function () {
     switch (shift) {
         case "malam":
             waktuarr = ["00:00", "04:00"]
-            synctimearr = [moment(date + ' ' + "00:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "04:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
+            synctimearr = [moment(date + ' ' + "00:10:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "04:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
             break;
         case "pagi":
             waktuarr = ["08:00", "12:00"]
