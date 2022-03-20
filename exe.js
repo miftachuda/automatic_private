@@ -192,7 +192,6 @@ var filtering = async function (state, unit, waktu, scanner, synctime) {
         var nowschedule = lodash(schedule).filter({ "unit": unit, "shift": waktu, "status": "Running" }).value()
         var filterchedule = nowschedule.filter(function (item) {
             if (item.equipment.substring(0, 4) == '041T' || item.equipment.substring(0, 4) == "TAPP") {
-                console.log("tank")
                 return false
             } else
                 return true;
@@ -254,7 +253,7 @@ var syncronize = async function (tosend, token) {
     console.log("Uploading Record Data...")
     return axios(config)
         .then(function (response) {
-            console.log(response)
+            console.log(response.data[0].message)
             return response.data
         })
         .catch(function (error) {
@@ -264,7 +263,6 @@ var syncronize = async function (tosend, token) {
 }
 var uploadscene = async function (state, unit, waktu, scanner, synctime, token) {
     var resultdata = await filtering(state, unit, waktu, scanner, synctime)
-    console.log(resultdata[1])
     if (resultdata[1] != null && resultdata[0] != null) {
         sync = await inquirer
             .prompt([
@@ -277,9 +275,9 @@ var uploadscene = async function (state, unit, waktu, scanner, synctime, token) 
                         return val
                     }
                 }
-            ]).then((w) => {
+            ]).then(async (w) => {
                 if (w.sync === "yes") {
-                    console.log(syncronize(resultdata[0], resultdata[1]).data)
+                    await syncronize(resultdata[0], token)
                 } else {
                     console.log("Upload canceled".red)
                 }
@@ -346,7 +344,6 @@ var runit = async function () {
                 break;
         }
         await asyncForEach(waktuarr, async (waktu, i) => {
-            console.log(randomInteger(720, 1600))
             await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1])
         })
     })
