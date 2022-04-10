@@ -2,15 +2,10 @@ const fs = require('fs/promises');
 const lodash = require("lodash")
 const moment = require("moment")
 var axios = require('axios');
-var chalk = require('chalk');
 var qs = require('qs');
 require('colors');
 const inquirer = require('inquirer');
 inquirer.registerPrompt("date", require("inquirer-date-prompt"));
-
-var synctime;
-
-var delay;
 var mode;
 var lastvalue;
 var schedule;
@@ -18,6 +13,14 @@ var shift;
 var scannerarr = ["muhammad.rovalino", "satrio.sarjono", "miftachul.huda"]
 var unit = ["021", "022", "023", "024", "025", "041"]
 
+function checkDate() {
+    var hours = moment().hours()
+    if (hours < 8) {
+        return "malam"
+    } else if (hours < 16) {
+        return "pagi"
+    } else return "sore"
+}
 async function getInput() {
     //var username = readlineSync.question('Input Username : ');
     //var password = readlineSync.question('Input Password : ', {
@@ -26,20 +29,8 @@ async function getInput() {
     password = 'asyncFunti0n11';
 
 
-    shift = await inquirer
-        .prompt([
-            {
-                type: 'list',
-                name: 'shift',
-                message: 'Pilih shift :',
-                choices: ['malam', 'pagi', 'sore'],
-                filter(val) {
-                    return val;
-                },
-            },
-        ]).then((w) => {
-            return w.shift
-        })
+
+    shift = checkDate()
     mode = await inquirer
         .prompt([
             {
@@ -57,7 +48,6 @@ async function getInput() {
 
 
 }
-
 
 async function fire() {
     var getTokenLogin = async function () {
@@ -192,7 +182,6 @@ var filtering = async function (state, unit, waktu, scanner, synctime) {
         var nowschedule = lodash(schedule).filter({ "unit": unit, "shift": waktu, "status": "Running" }).value()
         var filterchedule = nowschedule.filter(function (item) {
             if (item.equipment.substring(0, 4) == '041T' || item.equipment.substring(0, 4) == "TAPP") {
-                console.log("tank")
                 return false
             } else
                 return true;
@@ -254,7 +243,7 @@ var syncronize = async function (tosend, token) {
     console.log("Uploading Record Data...")
     return axios(config)
         .then(function (response) {
-            console.log(response)
+            console.log(response.data[0].Message)
             return response.data
         })
         .catch(function (error) {
@@ -264,7 +253,6 @@ var syncronize = async function (tosend, token) {
 }
 var uploadscene = async function (state, unit, waktu, scanner, synctime, token) {
     var resultdata = await filtering(state, unit, waktu, scanner, synctime)
-    console.log(resultdata[1])
     if (resultdata[1] != null && resultdata[0] != null) {
         sync = await inquirer
             .prompt([
@@ -277,9 +265,9 @@ var uploadscene = async function (state, unit, waktu, scanner, synctime, token) 
                         return val
                     }
                 }
-            ]).then((w) => {
+            ]).then(async (w) => {
                 if (w.sync === "yes") {
-                    console.log(syncronize(resultdata[0], resultdata[1]).data)
+                    await syncronize(resultdata[0], token)
                 } else {
                     console.log("Upload canceled".red)
                 }
@@ -346,7 +334,6 @@ var runit = async function () {
                 break;
         }
         await asyncForEach(waktuarr, async (waktu, i) => {
-            console.log(randomInteger(720, 1600))
             await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1])
         })
     })
