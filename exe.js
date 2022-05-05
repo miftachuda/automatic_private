@@ -1,17 +1,16 @@
 const fs = require('fs/promises');
 const lodash = require("lodash")
 const moment = require("moment")
-var axios = require('axios');
-var qs = require('qs');
+const axios = require('axios');
+const qs = require('qs');
 require('colors');
-const inquirer = require('inquirer');
-inquirer.registerPrompt("date", require("inquirer-date-prompt"));
-var mode;
 var lastvalue;
 var schedule;
 var shift;
 var scannerarr = ["muhammad.rovalino", "satrio.sarjono", "miftachul.huda"]
 var unit = ["021", "022", "023", "024", "025", "041"]
+var username = 'miftachul.huda';
+var password = 'asyncFunti0n11';
 
 function checkDate() {
     var hours = moment().hours()
@@ -21,33 +20,7 @@ function checkDate() {
         return "pagi"
     } else return "sore"
 }
-async function getInput() {
-    //var username = readlineSync.question('Input Username : ');
-    //var password = readlineSync.question('Input Password : ', {
-    //hideEchoBack: true // The typed text on screen is hidden by `*` (default).});
-    username = 'miftachul.huda';
-    password = 'asyncFunti0n11';
 
-
-
-    shift = checkDate()
-    mode = await inquirer
-        .prompt([
-            {
-                type: 'list',
-                name: 'mode',
-                message: 'Pilih mode data :',
-                choices: ['skip', 'resync all', 'resync last value', 'resync schedule',],
-                filter(val) {
-                    return val;
-                },
-            },
-        ]).then((w) => {
-            return w.mode
-        })
-
-
-}
 
 async function fire() {
     var getTokenLogin = async function () {
@@ -89,7 +62,7 @@ async function fire() {
         console.log("Request Last Value, Please Wait....")
         return axios(config)
             .then(function (response) {
-                console.log("Sucessfully Get Last Value".green)
+                console.log("Sucessfully Get Last Value From Server".green)
                 return response.data
             })
             .catch(function (error) {
@@ -109,7 +82,7 @@ async function fire() {
         console.log("Request Schedule History, Please Wait....")
         return axios(config)
             .then(function (response) {
-                console.log("Sucessfully Get Schedule History".green)
+                console.log("Sucessfully Get Schedule History From Server".green)
                 return response.data
             })
             .catch(function (error) {
@@ -121,60 +94,81 @@ async function fire() {
     }
     let state = true;
     const gettoken = await getTokenLogin()
-    function requireF(modulePath, err) { // force require
+    async function requireF(modulePath, err, cb) { // force require
         try {
             state = true
             return require(modulePath);
         }
         catch (e) {
-            console.log(err)
+            console.log(err.red)
+            await cd()
             state = false
             return false;
         }
     }
-    switch (mode) {
-        case 'skip':
-            lastvalue = requireF('./lastvalue.json', "Last value not available please choose resync mode")
-            schedule = requireF('./schedule.json', "Schedule not available please choose resync mode")
-            break;
-        case 'resync all':
-            lastvalue = await getLastValue(gettoken)
-            fs.writeFile('lastvalue.json', JSON.stringify(lastvalue)).then(function (response) {
-                console.log("Sucessfully Save Last Value".green)
-            })
-                .catch(function (error) {
-                    console.log("Failed Save Last Value".red);
-                });
-            schedule = await getSchedule(gettoken)
-            fs.writeFile('schedule.json', JSON.stringify(schedule)).then(function (response) {
-                console.log("Sucessfully Save Schedule".green)
-            })
-                .catch(function (error) {
-                    console.log("Failed Save Schedule".red);
-                });
-            break;
-        case 'resync last value':
-            lastvalue = await getLastValue(gettoken)
-            fs.writeFile('lastvalue.json', JSON.stringify(lastvalue)).then(function (response) {
-                console.log("Sucessfully Save Last Value".green)
-            })
-                .catch(function (error) {
-                    console.log("Failed Save Last Value".red);
-                });
-            schedule = requireF('./schedule.json', "Schedule not available please choose resync mode")
-            break;
-        case 'resync schedule':
-            lastvalue = requireF('./lastvalue.json', "Last value not available please choose resync mode")
-            schedule = await getSchedule(gettoken)
-            fs.writeFile('schedule.json', JSON.stringify(schedule)).then(function (response) {
-                console.log("Sucessfully Save Schedule".green)
-            })
-                .catch(function (error) {
-                    console.log("Failed Save Schedule".red);
-                });
-            break;
 
+    async function gettingReq() {
+        lastvalue = await getLastValue(gettoken).then((v) => {
+            return v
+        })
+            .catch(() => {
+                console.log("Failed Get Last Value From Server. Trying to Get From Disk".bgYellow)
+                return requireF('./lastvalue.json', "Last value not available in the Disk", gettingReq)
+            })
+
+        fs.writeFile('lastvalue.json', JSON.stringify(lastvalue))
+        schedule = await getSchedule(gettoken).then((v) => {
+            return v
+        }).catch(() => {
+            console.log("Failed Get Schedule From Server. Trying to Get From Disk".bgYellow)
+            return requireF('./schedule.json', "Schedule not available in the Disk")
+        })
+        fs.writeFile('schedule.json', JSON.stringify(schedule))
     }
+    await gettingReq()
+    // switch (mode) {
+    //     case 'skip':
+    //         lastvalue = requireF('./lastvalue.json', "Last value not available please choose resync mode")
+    //         schedule = requireF('./schedule.json', "Schedule not available please choose resync mode")
+    //         break;
+    //     case 'resync all':
+    //         lastvalue = await getLastValue(gettoken)
+    //         fs.writeFile('lastvalue.json', JSON.stringify(lastvalue)).then(function (response) {
+    //             console.log("Sucessfully Save Last Value".green)
+    //         })
+    //             .catch(function (error) {
+    //                 console.log("Failed Save Last Value".red);
+    //             });
+    //         schedule = await getSchedule(gettoken)
+    //         fs.writeFile('schedule.json', JSON.stringify(schedule)).then(function (response) {
+    //             console.log("Sucessfully Save Schedule".green)
+    //         })
+    //             .catch(function (error) {
+    //                 console.log("Failed Save Schedule".red);
+    //             });
+    //         break;
+    //     case 'resync last value':
+    //         lastvalue = await getLastValue(gettoken)
+    //         fs.writeFile('lastvalue.json', JSON.stringify(lastvalue)).then(function (response) {
+    //             console.log("Sucessfully Save Last Value".green)
+    //         })
+    //             .catch(function (error) {
+    //                 console.log("Failed Save Last Value".red);
+    //             });
+    //         schedule = requireF('./schedule.json', "Schedule not available please choose resync mode")
+    //         break;
+    //     case 'resync schedule':
+    //         lastvalue = requireF('./lastvalue.json', "Last value not available please choose resync mode")
+    //         schedule = await getSchedule(gettoken)
+    //         fs.writeFile('schedule.json', JSON.stringify(schedule)).then(function (response) {
+    //             console.log("Sucessfully Save Schedule".green)
+    //         })
+    //             .catch(function (error) {
+    //                 console.log("Failed Save Schedule".red);
+    //             });
+    //         break;
+
+    // }
     return [state, gettoken]
 }
 var filtering = async function (state, unit, waktu, scanner, synctime) {
@@ -243,60 +237,66 @@ var syncronize = async function (tosend, token) {
     console.log("Uploading Record Data...")
     return axios(config)
         .then(function (response) {
-            console.log(response.data[0].Message)
-            return response.data
+            return response.data[0].Message
         })
         .catch(function (error) {
+            s
             console.log(error);
         });
 
 }
+//send message to telegram API
+async function sendMessage(message) {
+    let encoded = encodeURIComponent(message);
+    var config = {
+        method: 'post',
+        url: `https://api.telegram.org/bot5266529032:AAG6oq2TOmKOXrt5qaeVLk3ehvYF0bJZ6ko/sendMessage?chat_id=-575255072&parse_mode=HTML&text=${encoded}`,
+        headers: {}
+    };
+
+    await axios(config)
+        .then(function (response) {
+            console.log("Telegram message Sent");
+        })
+        .catch(function (error) {
+            console.log("Failed sending Telegram message");
+            console.log(error)
+        });
+}
 var uploadscene = async function (state, unit, waktu, scanner, synctime, token) {
     var resultdata = await filtering(state, unit, waktu, scanner, synctime)
     if (resultdata[1] != null && resultdata[0] != null) {
-        sync = await inquirer
-            .prompt([
-                {
-                    type: 'list',
-                    name: 'sync',
-                    message: `${Object.keys(resultdata[1]).length} Equip Record Ready to send,Unit ${unit} jam ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp.blue} ${scanner}`,
-                    choices: ['yes', 'no'],
-                    filter(val) {
-                        return val
-                    }
-                }
-            ]).then(async (w) => {
-                if (w.sync === "yes") {
-                    await syncronize(resultdata[0], token)
-                } else {
-                    console.log("Upload canceled".red)
-                }
-                return w.sync
-            })
-
+        await syncronize(resultdata[0], token).then(async (x) => {
+            console.log(`Upload ${Object.keys(resultdata[1]).length} Equip Record Unit ${unit} jam ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp.blue} user ${scanner} Messages : ${x.blue}`)
+            await sendMessage(`<b>${scanner}</b> Unit <b>${unit}</b> ${Object.keys(resultdata[1]).length} Equip Record ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp} :[${x}]`)
+        }).catch(async () => {
+            await syncronize(resultdata[0], token)
+        })
     } else {
         console.log("Data not available".red)
+        await sendMessage("No records available to send")
     }
 
 }
 var runit = async function () {
-    function randomInteger(min, max) {
-        return Math.floor(Math.random() * (max - min + 1) + min)
-    }
-    await getInput()
-    var statentoken = await fire()
-    var date = moment().format("YYYY-MM-DD").toString();
-    var waktuarr;
-    var synctimearr;
     async function asyncForEach(array, callback) {
         for (let index = 0; index < array.length; index++) {
             await callback(array[index], index, array);
         }
     }
+    var date = moment().format("YYYY-MM-DD").toString();
+    shift = checkDate()
+    var statentoken = await fire()
+
     function radomize() {
-        random = randomInteger(720, 1600)
+        function randomInteger(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+        random = randomInteger(720, 1800)
         return random
     }
+    var waktuarr;
+    var synctimearr;
     switch (shift) {
         case "malam":
             waktuarr = ["00:00", "04:00"]
@@ -304,11 +304,11 @@ var runit = async function () {
             break;
         case "pagi":
             waktuarr = ["08:00", "12:00"]
-            synctimearr = [moment(date + ' ' + "08:10").add(randomInteger(720, 1600), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "12:00").add(randomInteger(720, 1800), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
+            synctimearr = [moment(date + ' ' + "08:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "12:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
             break;
         case "sore":
             waktuarr = ["16:00", "20:00"]
-            synctimearr = [moment(date + ' ' + "16:10").add(randomInteger(720, 1600), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "20:00").add(randomInteger(720, 1800), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
+            synctimearr = [moment(date + ' ' + "16:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "20:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
             break;
     }
     await asyncForEach(unit, async (unit) => {
@@ -334,7 +334,9 @@ var runit = async function () {
                 break;
         }
         await asyncForEach(waktuarr, async (waktu, i) => {
-            await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1])
+            await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1]).catch(async () => {
+                await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1])
+            })
         })
     })
 }
