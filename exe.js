@@ -38,7 +38,7 @@ function getPeriod(min) {
     }
 }
 
-function checkShift(){
+function checkShift() {
     var now = moment(new Date());
     var end = moment("2021-12-22");
     var duration = moment.duration(now.diff(end));
@@ -55,7 +55,20 @@ function checkDate() {
         return "pagi"
     } else return "sore"
 }
-
+async function callAxiosWithRetry(config, depth, failMassage) {
+    const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+    try {
+        return await axios(config)
+    } catch (e) {
+        if (depth > 20) {
+            throw e;
+        }
+        console.log(failMassage.red)
+        await wait(2 ** depth * 100);
+        console.log("Retrying .. ".green + depth)
+        return callAxiosWithRetry(config, depth + 1, failMassage);
+    }
+}
 
 async function fire() {
     var getTokenLogin = async function () {
@@ -74,14 +87,10 @@ async function fire() {
             data: data
         };
         console.log("Send Login key....")
-        return axios(config)
-            .then(function (response) {
-                console.log("Sucessfully Login to server".green)
-                return response.data.token
-            })
-            .catch(function (error) {
-                console.log('Failed to Login Something Wrong'.red);
-            });
+        return callAxiosWithRetry(config, 0, "Failed to Login Something Wrong").then(function (response) {
+            console.log("Sucessfully Login to server".green)
+            return response.data.token
+        });
 
     }
 
@@ -95,16 +104,10 @@ async function fire() {
 
         };
         console.log("Request Last Value, Please Wait....")
-        return axios(config)
-            .then(function (response) {
-                console.log("Sucessfully Get Last Value From Server".green)
-                return response.data
-            })
-            .catch(function (error) {
-                console.log('Failed to get Last Value Record'.red);
-                runit()
-            });
-
+        return callAxiosWithRetry(config, 0, 'Failed to get Last Value Record').then(function (response) {
+            console.log("Sucessfully Get Last Value From Server".green)
+            return response.data
+        });
     }
     var getSchedule = async function (token) {
         var config = {
@@ -115,15 +118,10 @@ async function fire() {
             }
         };
         console.log("Request Schedule History, Please Wait....")
-        return axios(config)
-            .then(function (response) {
-                console.log("Sucessfully Get Schedule History From Server".green)
-                return response.data
-            })
-            .catch(function (error) {
-                console.log("Failed to Get Schedule History".red);
-                runit()
-            });
+        return callAxiosWithRetry(config, 0, "Failed to Get Schedule History").then(function (response) {
+            console.log("Sucessfully Get Schedule History From Server".green)
+            return response.data
+        });
 
 
     }
@@ -136,77 +134,28 @@ async function fire() {
         }
         catch (e) {
             console.log(err.red)
-            await cd()
+            await cb()
             state = false
             return false;
         }
     }
 
-    async function gettingReq() {
-        lastvalue = await getLastValue(gettoken).then((v) => {
-            return v
+    await (async function gettingReq() {
+        lastvalue = await getLastValue(gettoken).then((v) => v).catch(() => {
+            console.log("Failed Get Last Value From Server. Trying to Get From Disk".bgYellow)
+            return requireF('./lastvalue.json', "Last value not available in the Disk", gettingReq)
         })
-            .catch(() => {
-                console.log("Failed Get Last Value From Server. Trying to Get From Disk".bgYellow)
-                return requireF('./lastvalue.json', "Last value not available in the Disk", gettingReq)
-            })
 
         fs.writeFile('lastvalue.json', JSON.stringify(lastvalue))
-        schedule = await getSchedule(gettoken).then((v) => {
-            return v
-        }).catch(() => {
+        schedule = await getSchedule(gettoken).then((v) => v).catch(() => {
             console.log("Failed Get Schedule From Server. Trying to Get From Disk".bgYellow)
             return requireF('./schedule.json', "Schedule not available in the Disk")
         })
         fs.writeFile('schedule.json', JSON.stringify(schedule))
-    }
-    await gettingReq()
-    // switch (mode) {
-    //     case 'skip':
-    //         lastvalue = requireF('./lastvalue.json', "Last value not available please choose resync mode")
-    //         schedule = requireF('./schedule.json', "Schedule not available please choose resync mode")
-    //         break;
-    //     case 'resync all':
-    //         lastvalue = await getLastValue(gettoken)
-    //         fs.writeFile('lastvalue.json', JSON.stringify(lastvalue)).then(function (response) {
-    //             console.log("Sucessfully Save Last Value".green)
-    //         })
-    //             .catch(function (error) {
-    //                 console.log("Failed Save Last Value".red);
-    //             });
-    //         schedule = await getSchedule(gettoken)
-    //         fs.writeFile('schedule.json', JSON.stringify(schedule)).then(function (response) {
-    //             console.log("Sucessfully Save Schedule".green)
-    //         })
-    //             .catch(function (error) {
-    //                 console.log("Failed Save Schedule".red);
-    //             });
-    //         break;
-    //     case 'resync last value':
-    //         lastvalue = await getLastValue(gettoken)
-    //         fs.writeFile('lastvalue.json', JSON.stringify(lastvalue)).then(function (response) {
-    //             console.log("Sucessfully Save Last Value".green)
-    //         })
-    //             .catch(function (error) {
-    //                 console.log("Failed Save Last Value".red);
-    //             });
-    //         schedule = requireF('./schedule.json', "Schedule not available please choose resync mode")
-    //         break;
-    //     case 'resync schedule':
-    //         lastvalue = requireF('./lastvalue.json', "Last value not available please choose resync mode")
-    //         schedule = await getSchedule(gettoken)
-    //         fs.writeFile('schedule.json', JSON.stringify(schedule)).then(function (response) {
-    //             console.log("Sucessfully Save Schedule".green)
-    //         })
-    //             .catch(function (error) {
-    //                 console.log("Failed Save Schedule".red);
-    //             });
-    //         break;
-
-    // }
+    })()
     return [state, gettoken]
 }
-var filtering = async function (state, unit, waktu, scanner, synctime) {
+var filtering = function (state, unit, waktu, scanner, synctime) {
     if (state) {
         var nowschedule = lodash(schedule).filter({ "unit": unit, "shift": waktu, "status": "Running" }).value()
         var filterchedule = nowschedule.filter(function (item) {
@@ -258,7 +207,7 @@ var filtering = async function (state, unit, waktu, scanner, synctime) {
     return [tosendconcat, filterchedule]
 }
 
-var syncronize = async function (tosend, token) {
+var syncronize = async function (tosend, token, unit, waktu) {
     var data = JSON.stringify(tosend);
     var config = {
         method: 'post',
@@ -270,14 +219,11 @@ var syncronize = async function (tosend, token) {
         data: data
     };
     console.log("Uploading Record Data...")
-    return axios(config)
-        .then(function (response) {
-            return response.data[0].Message
-        })
-        .catch(function (error) {
-            s
-            console.log(error);
-        });
+    return callAxiosWithRetry(config, 0, `Upload ${unit} time ${waktu} Failed`).then(function (response) {
+        console.log("Sucessfully Sending Records".green)
+        return response.data[0].Message
+    });
+
 
 }
 //send message to telegram API
@@ -299,13 +245,13 @@ async function sendMessage(message) {
         });
 }
 var uploadscene = async function (state, unit, waktu, scanner, synctime, token) {
-    var resultdata = await filtering(state, unit, waktu, scanner, synctime)
+    var resultdata = filtering(state, unit, waktu, scanner, synctime)
     if (resultdata[1] != null && resultdata[0] != null) {
-        await syncronize(resultdata[0], token).then(async (x) => {
+        await syncronize(resultdata[0], token, unit, waktu).then(async (x) => {
             console.log(`Upload ${Object.keys(resultdata[1]).length} Equip Record Unit ${unit} jam ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp.blue} user ${scanner} Messages : ${x.blue}`)
             await sendMessage(`<b>${scanner}</b> Unit <b>${unit}</b> ${Object.keys(resultdata[1]).length} Equip Record ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp} :[${x}]`)
-        }).catch(async () => {
-            await syncronize(resultdata[0], token)
+        }).catch(() => {
+            console.log("failed upload record")
         })
     } else {
         console.log("Data not available".red)
@@ -314,69 +260,69 @@ var uploadscene = async function (state, unit, waktu, scanner, synctime, token) 
 
 }
 var runit = async function () {
-    var curshift = await checkShift()
-    if(curshift[0] != "A"){
+    var curshift = checkShift()
+    if (curshift[0] != "A") {
+        console.log("notshift")
         return
     } else {
-    async function asyncForEach(array, callback) {
-        for (let index = 0; index < array.length; index++) {
-            await callback(array[index], index, array);
+        async function asyncForEach(array, callback) {
+            for (let index = 0; index < array.length; index++) {
+                await callback(array[index], index, array);
+            }
         }
-    }
-    var date = moment().format("YYYY-MM-DD").toString();
-    var shift = checkDate()
-    var statentoken = await fire()
+        var date = moment().format("YYYY-MM-DD").toString();
+        var shift = checkDate()
+        var statentoken = await fire()
 
-    function radomize() {
-        function randomInteger(min, max) {
-            return Math.floor(Math.random() * (max - min + 1) + min)
+        function radomize() {
+            function randomInteger(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min)
+            }
+            random = randomInteger(720, 1800)
+            return random
         }
-        random = randomInteger(720, 1800)
-        return random
-    }
-    var waktuarr;
-    var synctimearr;
-    switch (shift) {
-        case "malam":
-            waktuarr = ["00:00", "04:00"]
-            synctimearr = [moment(date + ' ' + "00:10:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "04:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-            break;
-        case "pagi":
-            waktuarr = ["08:00", "12:00"]
-            synctimearr = [moment(date + ' ' + "08:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "12:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-            break;
-        case "sore":
-            waktuarr = ["16:00", "20:00"]
-            synctimearr = [moment(date + ' ' + "16:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "20:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-            break;
-    }
-    await asyncForEach(unit, async (unit) => {
-        var scanner;
-        switch (unit) {
-            case "021":
-                scanner = scannerarr[0]
+        var waktuarr;
+        var synctimearr;
+        switch (shift) {
+            case "malam":
+                waktuarr = ["00:00", "04:00"]
+                synctimearr = [moment(date + ' ' + "00:10:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "04:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
                 break;
-            case "022":
-                scanner = scannerarr[0]
+            case "pagi":
+                waktuarr = ["08:00", "12:00"]
+                synctimearr = [moment(date + ' ' + "08:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "12:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
                 break;
-            case "023":
-                scanner = scannerarr[1]
-                break;
-            case "024":
-                scanner = scannerarr[2]
-                break;
-            case "025":
-                scanner = scannerarr[0]
-                break;
-            case "041":
-                scanner = scannerarr[1]
+            case "sore":
+                waktuarr = ["16:00", "20:00"]
+                synctimearr = [moment(date + ' ' + "16:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "20:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
                 break;
         }
-        await asyncForEach(waktuarr, async (waktu, i) => {
-            await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1]).catch(async () => {
+        await asyncForEach(unit, async (unit) => {
+            var scanner;
+            switch (unit) {
+                case "021":
+                    scanner = scannerarr[0]
+                    break;
+                case "022":
+                    scanner = scannerarr[0]
+                    break;
+                case "023":
+                    scanner = scannerarr[1]
+                    break;
+                case "024":
+                    scanner = scannerarr[2]
+                    break;
+                case "025":
+                    scanner = scannerarr[0]
+                    break;
+                case "041":
+                    scanner = scannerarr[1]
+                    break;
+            }
+            await asyncForEach(waktuarr, async (waktu, i) => {
                 await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1])
             })
         })
-    })}
+    }
 }
 runit()
