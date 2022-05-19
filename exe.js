@@ -295,7 +295,7 @@ const proceed = async function (params) {
         await asyncForEach(param[1], async (unit) => {
             await asyncForEach(waktuarr, async (waktu, i) => {
                 console.log(statentoken[0], unit, waktu, param[0], synctimearr[i], statentoken[1])
-                // await uploadscene(statentoken[0], unit, waktu, params.user, synctimearr[i], statentoken[1])
+                await uploadscene(statentoken[0], unit, waktu, params.user, synctimearr[i], statentoken[1])
             })
         })
     })
@@ -303,7 +303,7 @@ const proceed = async function (params) {
 
 var runit = async function () {
     var curshift = checkShift()
-    switch ("D") {
+    switch (curshift[0]) {
         case "A":
             console.log("No Task")
             break;
