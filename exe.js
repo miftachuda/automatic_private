@@ -47,7 +47,7 @@ function checkShift() {
     return listshift[day][getPeriod(minutes)];
 }
 
-function checkDate() {
+function checkShiftPeriod() {
     var hours = moment().hours()
     if (hours < 8) {
         return "malam"
@@ -70,11 +70,11 @@ async function callAxiosWithRetry(config, depth, failMassage) {
     }
 }
 
-async function fire() {
+async function fire(user, pass) {
     var getTokenLogin = async function () {
         var data = qs.stringify({
-            'username': username,
-            'password': password,
+            'username': user,
+            'password': pass,
             'companyCode': '1010',
             'domainName': 'pertamina'
         });
@@ -259,70 +259,84 @@ var uploadscene = async function (state, unit, waktu, scanner, synctime, token) 
     }
 
 }
-var runit = async function () {
-    var curshift = checkShift()
-    if (curshift[0] != "A") {
-        console.log("notshift")
-        return
-    } else {
-        async function asyncForEach(array, callback) {
-            for (let index = 0; index < array.length; index++) {
-                await callback(array[index], index, array);
-            }
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
+const proceed = async function (params) {
+    var date = moment().format("YYYY-MM-DD").toString();
+    var shift = checkShiftPeriod()
+    var statentoken = await fire(params.username, params.password)
+    function radomize() {
+        function randomInteger(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) + min)
         }
-        var date = moment().format("YYYY-MM-DD").toString();
-        var shift = checkDate()
-        var statentoken = await fire()
-
-        function radomize() {
-            function randomInteger(min, max) {
-                return Math.floor(Math.random() * (max - min + 1) + min)
-            }
-            random = randomInteger(720, 1800)
-            return random
-        }
-        var waktuarr;
-        var synctimearr;
-        switch (shift) {
-            case "malam":
-                waktuarr = ["00:00", "04:00"]
-                synctimearr = [moment(date + ' ' + "00:10:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "04:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-                break;
-            case "pagi":
-                waktuarr = ["08:00", "12:00"]
-                synctimearr = [moment(date + ' ' + "08:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "12:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-                break;
-            case "sore":
-                waktuarr = ["16:00", "20:00"]
-                synctimearr = [moment(date + ' ' + "16:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "20:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-                break;
-        }
-        await asyncForEach(unit, async (unit) => {
-            var scanner;
-            switch (unit) {
-                case "021":
-                    scanner = scannerarr[0]
-                    break;
-                case "022":
-                    scanner = scannerarr[0]
-                    break;
-                case "023":
-                    scanner = scannerarr[1]
-                    break;
-                case "024":
-                    scanner = scannerarr[2]
-                    break;
-                case "025":
-                    scanner = scannerarr[0]
-                    break;
-                case "041":
-                    scanner = scannerarr[1]
-                    break;
-            }
+        random = randomInteger(720, 1800)
+        return random
+    }
+    var waktuarr;
+    var synctimearr;
+    switch (shift) {
+        case "malam":
+            waktuarr = ["00:00", "04:00"]
+            synctimearr = [moment(date + ' ' + "00:10:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "04:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
+            break;
+        case "pagi":
+            waktuarr = ["08:00", "12:00"]
+            synctimearr = [moment(date + ' ' + "08:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "12:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
+            break;
+        case "sore":
+            waktuarr = ["16:00", "20:00"]
+            synctimearr = [moment(date + ' ' + "16:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "20:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
+            break;
+    }
+    await asyncForEach(params.unit, async (param) => {
+        await asyncForEach(param[1], async (unit) => {
             await asyncForEach(waktuarr, async (waktu, i) => {
-                await uploadscene(statentoken[0], unit, waktu, scanner, synctimearr[i], statentoken[1])
+                console.log(statentoken[0], unit, waktu, param[0], synctimearr[i], statentoken[1])
+                // await uploadscene(statentoken[0], unit, waktu, params.user, synctimearr[i], statentoken[1])
             })
         })
+    })
+}
+
+var runit = async function () {
+    var curshift = checkShift()
+    switch ("D") {
+        case "A":
+            console.log("No Task")
+            break;
+        case "B":
+            proceed({
+                username: "allan.syahputra",
+                password: "Pertaminaru4",
+                unit: ["024"]
+            })
+            break;
+        case "C":
+            proceed({
+                username: "muhammad.aulya",
+                password: "Pertamina752906752",
+                unit: [["muhammad.aulya", ["021", "022", "025"]]]
+            })
+            break;
+        case "D":
+            var params = {
+                username: "miftachul.huda",
+                password: "asyncFunti0n11",
+                unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
+            }
+            var bool = Math.round(Math.random())
+            if (bool == 1) {
+                params.unit[0][1].push("002")
+            }
+            proceed(params)
+            break;
+        default:
+            console.log("Error no shift match")
+            break;
     }
+
 }
 runit()
