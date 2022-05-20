@@ -295,7 +295,7 @@ const proceed = async function (params) {
         await asyncForEach(param[1], async (unit) => {
             await asyncForEach(waktuarr, async (waktu, i) => {
                 console.log(statentoken[0], unit, waktu, param[0], synctimearr[i], statentoken[1])
-                await uploadscene(statentoken[0], unit, waktu, params.user, synctimearr[i], statentoken[1])
+                await uploadscene(statentoken[0], unit, waktu, param[0], synctimearr[i], statentoken[1])
             })
         })
     })
@@ -322,6 +322,7 @@ var runit = async function () {
             })
             break;
         case "D":
+            console.log("shift D")
             var params = {
                 username: "miftachul.huda",
                 password: "asyncFunti0n11",
