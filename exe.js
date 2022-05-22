@@ -311,7 +311,7 @@ var runit = async function () {
             proceed({
                 username: "allan.syahputra",
                 password: "Pertaminaru4",
-                unit: ["024"]
+                unit: [["allan.syahputra", ["024"]]]
             })
             break;
         case "C":
