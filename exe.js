@@ -49,11 +49,17 @@ function checkShift() {
 
 function checkShiftPeriod() {
     var hours = moment().hours()
-    if (hours < 8) {
-        return "malam"
+    if (hours < 4) {
+        return "00:00"
+    } else if (hours < 8) {
+        return "04:00"
+    } else if (hours < 12) {
+        return "08:00"
     } else if (hours < 16) {
-        return "pagi"
-    } else return "sore"
+        return "12:00"
+    } else if (hours < 20) {
+        return "16:00"
+    } else return "20:00"
 }
 async function callAxiosWithRetry(config, depth, failMassage) {
     const wait = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -158,14 +164,20 @@ async function fire(user, pass) {
 var filtering = function (state, unit, waktu, scanner, synctime) {
     if (state) {
         var nowschedule = lodash(schedule).filter({ "unit": unit, "shift": waktu, "status": "Running" }).value()
-        var filterchedule = nowschedule.filter(function (item) {
+        var filteredschedule = nowschedule.filter(function (item) {
             if (item.equipment.substring(0, 4) == '041T' || item.equipment.substring(0, 4) == "TAPP") {
                 return false
             } else
                 return true;
         })
-        var tosend = filterchedule.map(item => {
-
+        var tosend = filteredschedule.map(item => {
+            function radomize() {
+                function randomInteger(min, max) {
+                    return Math.floor(Math.random() * (max - min + 1) + min)
+                }
+                random = randomInteger(39, 120)
+                return random
+            }
             synctime = moment(synctime)
             function addSecond(date, second) {
                 return (date + (second * 1000))
@@ -175,7 +187,7 @@ var filtering = function (state, unit, waktu, scanner, synctime) {
                 return arr.concat(lastvaluefilter[key]);
             }, []);
 
-            var addtoday = addSecond(synctime, 25)//(240-600)
+            var addtoday = addSecond(synctime, radomize())
             var date = moment(addtoday).format("YYYY-MM-DD HH:mm:ss").toString()
             var jam = moment(addtoday).format("HH:mm:ss").toString()
             synctime = addtoday
@@ -204,7 +216,7 @@ var filtering = function (state, unit, waktu, scanner, synctime) {
         tosendconcat = null
     }
 
-    return [tosendconcat, filterchedule]
+    return [tosendconcat, filteredschedule]
 }
 
 var syncronize = async function (tosend, token, unit, waktu) {
@@ -245,6 +257,7 @@ async function sendMessage(message) {
         });
 }
 var uploadscene = async function (state, unit, waktu, scanner, synctime, token) {
+
     var resultdata = filtering(state, unit, waktu, scanner, synctime)
     if (resultdata[1] != null && resultdata[0] != null) {
         await syncronize(resultdata[0], token, unit, waktu).then(async (x) => {
@@ -266,37 +279,23 @@ async function asyncForEach(array, callback) {
 }
 const proceed = async function (params) {
     var date = moment().format("YYYY-MM-DD").toString();
-    var shift = checkShiftPeriod()
+    var waktu = checkShiftPeriod()
     var statentoken = await fire(params.username, params.password)
     function radomize() {
         function randomInteger(min, max) {
             return Math.floor(Math.random() * (max - min + 1) + min)
         }
-        random = randomInteger(720, 1800)
+        random = randomInteger(900, 1700)
         return random
     }
-    var waktuarr;
-    var synctimearr;
-    switch (shift) {
-        case "malam":
-            waktuarr = ["00:00", "04:00"]
-            synctimearr = [moment(date + ' ' + "00:10:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "04:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-            break;
-        case "pagi":
-            waktuarr = ["08:00", "12:00"]
-            synctimearr = [moment(date + ' ' + "08:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "12:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-            break;
-        case "sore":
-            waktuarr = ["16:00", "20:00"]
-            synctimearr = [moment(date + ' ' + "16:10").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString(), moment(date + ' ' + "20:00").add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()];
-            break;
+    function getRandomTime(time) {
+        return moment(date + ' ' + time).add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()
     }
+    var synctime = getRandomTime(waktu)
     await asyncForEach(params.unit, async (param) => {
         await asyncForEach(param[1], async (unit) => {
-            await asyncForEach(waktuarr, async (waktu, i) => {
-                console.log(statentoken[0], unit, waktu, param[0], synctimearr[i], statentoken[1])
-                await uploadscene(statentoken[0], unit, waktu, param[0], synctimearr[i], statentoken[1])
-            })
+            console.log(statentoken[0], unit, waktu, param[0], synctime, statentoken[1])
+            await uploadscene(statentoken[0], unit, waktu, param[0], synctime, statentoken[1])
         })
     })
 }
@@ -315,11 +314,11 @@ var runit = async function () {
             })
             break;
         case "C":
-            proceed({
-                username: "muhammad.aulya",
-                password: "Pertamina752906752",
-                unit: [["muhammad.aulya", ["021", "022", "025"]]]
-            })
+            // proceed({
+            //     username: "muhammad.aulya",
+            //     password: "Pertamina752906752",
+            //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
+            // })
             break;
         case "D":
             console.log("shift D")
