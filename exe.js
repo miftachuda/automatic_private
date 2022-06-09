@@ -223,7 +223,7 @@ var syncronize = async function (tosend, token, unit, waktu) {
     var data = JSON.stringify(tosend);
     var config = {
         method: 'post',
-        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecords/',
+        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecord/',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -304,34 +304,34 @@ var runit = async function () {
     var curshift = checkShift()
     switch (curshift[0]) {
         case "A":
-            console.log("No Task")
+            //console.log("No Task")
             break;
         case "B":
-            proceed({
-                username: "allan.syahputra",
-                password: "Pertaminaru4",
-                unit: [["allan.syahputra", ["024"]]]
-            })
+            //proceed({
+             //   username: "allan.syahputra",
+             //   password: "Pertaminaru4",
+            //   unit: [["allan.syahputra", ["024"]]]
+         //   })
             break;
         case "C":
-            // proceed({
-            //     username: "muhammad.aulya",
-            //     password: "Pertamina752906752",
-            //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
-            // })
+            proceed({
+                username: "muhammad.aulya",
+                password: "Pertamina752906752",
+                unit: [["muhammad.aulya", ["021", "022", "025"]]]
+             })
             break;
         case "D":
-            console.log("shift D")
-            var params = {
-                username: "miftachul.huda",
-                password: "asyncFunti0n11",
-                unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
-            }
-            var bool = Math.round(Math.random())
-            if (bool == 1) {
-                params.unit[0][1].push("002")
-            }
-            proceed(params)
+            //console.log("shift D")
+           // var params = {
+           //     username: "miftachul.huda",
+           //     password: "asyncFunti0n11",
+            //    unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
+          //  }
+         //   var bool = Math.round(Math.random())
+          //  if (bool == 1) {
+         ///       params.unit[0][1].push("002")
+          //  }
+          //  proceed(params)
             break;
         default:
             console.log("Error no shift match")
