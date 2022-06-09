@@ -322,16 +322,16 @@ var runit = async function () {
             break;
         case "D":
             //console.log("shift D")
-           // var params = {
-           //     username: "miftachul.huda",
-           //     password: "asyncFunti0n11",
-            //    unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
-          //  }
-         //   var bool = Math.round(Math.random())
-          //  if (bool == 1) {
-         ///       params.unit[0][1].push("002")
-          //  }
-          //  proceed(params)
+           var params = {
+              username: "miftachul.huda",
+              password: "asyncFunti0n11",
+              unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
+            }
+           var bool = Math.round(Math.random())
+           if (bool == 1) {
+             params.unit[0][1].push("002")
+           }
+          proceed(params)
             break;
         default:
             console.log("Error no shift match")
