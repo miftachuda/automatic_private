@@ -320,7 +320,7 @@ var runit = async function () {
             //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
             // })
             break;
-        case "B":
+        case "D":
             console.log("shift D")
             if (checkShiftPeriod() == "08:00") {
                 var params = {
