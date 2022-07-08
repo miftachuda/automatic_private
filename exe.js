@@ -303,30 +303,39 @@ const proceed = async function (params) {
 var runit = async function () {
     var curshift = checkShift()
     switch (curshift[0]) {
-        case "A":
+        case "X":
             console.log("No Task")
             break;
-        case "B":
+        case "X":
             proceed({
                 username: "allan.syahputra",
                 password: "Pertaminaru4",
                 unit: [["allan.syahputra", ["024"]]]
             })
             break;
-        case "C":
+        case "X":
             // proceed({
             //     username: "muhammad.aulya",
             //     password: "Pertamina752906752",
             //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
             // })
             break;
-        case "D":
+        case "B":
             console.log("shift D")
-            var params = {
-                username: "miftachul.huda",
-                password: "asyncFunti0n11",
-                unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
+            if (checkShiftPeriod() == "08:00") {
+                var params = {
+                    username: "miftachul.huda",
+                    password: "curlybracesHud4",
+                    unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]]]
+                }
+            } else {
+                var params = {
+                    username: "miftachul.huda",
+                    password: "curlybracesHud4",
+                    unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
+                }
             }
+
             var bool = Math.round(Math.random())
             if (bool == 1) {
                 params.unit[0][1].push("002")
