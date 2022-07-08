@@ -223,7 +223,7 @@ var syncronize = async function (tosend, token, unit, waktu) {
     var data = JSON.stringify(tosend);
     var config = {
         method: 'post',
-        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecords/',
+        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecord/',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -336,6 +336,10 @@ var runit = async function () {
                 }
             }
 
+            var bool = Math.round(Math.random())
+            if (bool == 1) {
+                params.unit[0][1].push("002")
+            }
             var bool = Math.round(Math.random())
             if (bool == 1) {
                 params.unit[0][1].push("002")
