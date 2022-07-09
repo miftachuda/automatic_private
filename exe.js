@@ -223,7 +223,7 @@ var syncronize = async function (tosend, token, unit, waktu) {
     var data = JSON.stringify(tosend);
     var config = {
         method: 'post',
-        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecord/',
+        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecords/',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
