@@ -9,7 +9,7 @@ var schedule;
 var scannerarr = ["muhammad.rovalino", "satrio.sarjono", "miftachul.huda"]
 var unit = ["021", "022", "023", "024", "025", "041"]
 var username = 'miftachul.huda';
-var password = 'asyncFunti0n11';
+var password = 'turnigy9xHud4';
 
 const listshift =
     [
@@ -223,7 +223,7 @@ var syncronize = async function (tosend, token, unit, waktu) {
     var data = JSON.stringify(tosend);
     var config = {
         method: 'post',
-        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecord/',
+        url: 'https://apps.pertamina.com/bocpp-v2.0/api/equipRecords/',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -320,30 +320,26 @@ var runit = async function () {
             //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
             // })
             break;
-        case "D":
+        case "C":
             console.log("shift D")
-            if (checkShiftPeriod() == "08:00") {
+            if (checkShiftPeriod() == "01:00") {
                 var params = {
                     username: "miftachul.huda",
-                    password: "curlybracesHud4",
+                    password: "turnigy9xHud4",
                     unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]]]
                 }
             } else {
                 var params = {
                     username: "miftachul.huda",
-                    password: "curlybracesHud4",
-                    unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["miftachul.huda", ["024"]]]
+                    password: "turnigy9xHud4",
+                    unit: [["muhammad.rovalino", ["021", "002"]], ["miftachul.huda", ["022", "025"]], ["satrio.sarjono", ["023", "041"]], ["danariyanto", ["024"]]]
                 }
             }
 
-            var bool = Math.round(Math.random())
-            if (bool == 1) {
-                params.unit[0][1].push("002")
-            }
-            var bool = Math.round(Math.random())
-            if (bool == 1) {
-                params.unit[0][1].push("002")
-            }
+            // var bool = Math.round(Math.random())
+            // if (bool == 1) {
+            //     params.unit[0][1].push("002")
+            // }
             proceed(params)
             break;
         default:
