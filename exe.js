@@ -313,34 +313,29 @@ var runit = async function () {
                 unit: [["allan.syahputra", ["024"]]]
             })
             break;
-        case "X":
-            // proceed({
-            //     username: "muhammad.aulya",
-            //     password: "Pertamina752906752",
-            //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
-            // })
-            break;
         case "C":
-            console.log("shift D")
-            if (checkShiftPeriod() == "01:00") {
-                var params = {
+            proceed({
+                username: "muhammad.aulya",
+                password: "Pertamina2022",
+                unit: [["muhammad.aulya", ["023", "024"]]]
+            })
+            break;
+        case "X":
+            console.log("Custom")
+            var params1 = {
                     username: "miftachul.huda",
                     password: "turnigy9xHud4",
                     unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]]]
                 }
-            } else {
-                var params = {
+
+            var params2 = {
                     username: "miftachul.huda",
                     password: "turnigy9xHud4",
                     unit: [["muhammad.rovalino", ["021", "002"]], ["miftachul.huda", ["022", "025"]], ["satrio.sarjono", ["023", "041"]], ["danariyanto", ["024"]]]
-                }
-            }
 
-            // var bool = Math.round(Math.random())
-            // if (bool == 1) {
-            //     params.unit[0][1].push("002")
-            // }
-            proceed(params)
+                }
+
+            proceed(params2)
             break;
         default:
             console.log("Error no shift match")
