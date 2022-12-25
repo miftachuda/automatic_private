@@ -6,10 +6,6 @@ const qs = require('qs');
 require('colors');
 var lastvalue;
 var schedule;
-var scannerarr = ["muhammad.rovalino", "satrio.sarjono", "miftachul.huda"]
-var unit = ["021", "022", "023", "024", "025", "041"]
-var username = 'miftachul.huda';
-var password = 'turnigy9xHud4';
 
 const listshift =
     [
@@ -320,8 +316,7 @@ var runit = async function () {
             //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
             // })
             break;
-        case "C":
-            console.log("shift D")
+        case "D":
             if (checkShiftPeriod() == "01:00") {
                 var params = {
                     username: "miftachul.huda",
@@ -332,7 +327,7 @@ var runit = async function () {
                 var params = {
                     username: "miftachul.huda",
                     password: "turnigy9xHud4",
-                    unit: [["muhammad.rovalino", ["021", "002"]], ["miftachul.huda", ["022", "025"]], ["satrio.sarjono", ["023", "041"]], ["danariyanto", ["024"]]]
+                    unit: [["satrio.sarjono", ["021", "002"]], ["miftachul.huda", ["022", "025"]], ["muhammad.rovalino", ["023", "041"]], ["muhammad.rovalino", ["024"]]]
                 }
             }
 
