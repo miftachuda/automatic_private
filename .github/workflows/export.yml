@@ -1,0 +1,61 @@
+name: build exe
+on:
+  workflow_dispatch:
+jobs:
+  pack:
+    name: bundling & packing
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16.18.0
+      - name: Install Dependencies
+        run: npm install
+      - name: Bundling with esbuild
+        run: npx esbuild eexe.js --bundle --platform=node --external:canvas --outfile=dist/auto.js
+#       - name: Packaging with pkg
+#         run: npx pkg --compress GZip -t node14-win dist/auto.js
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: distributables
+#           path: dist/*
+#           if-no-files-found: error
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: executeable
+#           path: '**/*.exe'
+#           if-no-files-found: error
+      - name: Get Previous tag
+        id: previoustag
+        uses: 'WyriHaximus/github-action-get-previous-tag@v1'
+        env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with: 
+         fallback: 1.0.0
+      - name: 'Get next version'
+        id: monoversion
+        uses: "WyriHaximus/github-action-next-release-version@1.0.0"
+        with:
+         version: ${{ steps.previoustag.outputs.tag }}
+      - name: Release
+        uses: actions/create-release@v1
+        id: create_release
+        env:
+         GITHUB_TOKEN: ${{ github.token }}
+        with:
+         draft: false
+         prerelease: false
+         tag_name: ${{ steps.monoversion.outputs.version }}
+         release_name: Release ${{ steps.monoversion.outputs.version}}
+      - name: upload windows artifact
+        uses: actions/upload-release-asset@v1
+        env:
+         GITHUB_TOKEN: ${{ github.token }}
+        with:
+         upload_url: ${{ steps.create_release.outputs.upload_url }}
+         asset_path: ./auto.js
+         asset_name: auto.js
+         asset_content_type: text
