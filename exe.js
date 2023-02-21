@@ -316,18 +316,17 @@ var runit = async function () {
             //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
             // })
             break;
-        case "D":
-            if (checkShiftPeriod() == "01:00") {
-                var params = {
-                    username: "miftachul.huda",
-                    password: "turnigy9xHud4",
-                    unit: [["muhammad.rovalino", ["021", "022", "025"]], ["satrio.sarjono", ["023", "041"]]]
-                }
+        case "C":
+            var params1 = {
+                username: "miftachul.huda",
+                password: "@syncfunti0n11",
+                unit: [["miftacuhl.huda", ["021", "022", "025"]]]
             }
+
             var params2 = {
                 username: "miftachul.huda",
-                password: "turnigy9xHud4",
-                unit: [["satrio.sarjono", ["021", "002"]], ["miftachul.huda", ["022", "025"]], ["muhammad.rovalino", ["023", "041"]], ["muhammad.rovalino", ["024"]]]
+                password: "@syncfunti0n11",
+                unit: [["satrio.sarjono", ["021", "002"]], ["miftachul.huda", ["022", "025"]], ["ananta.s", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
             proceed(params2)
