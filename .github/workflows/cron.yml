@@ -2,7 +2,7 @@ name: Create our Weekly Meeting notes issue
 on:
   schedule:
     # - cron: '30 3,4,11,12,19,20 * * *'
-    - cron: '*/2 * * * *'
+    - cron: '*/5 * * * *'
 jobs:
   issue:
     runs-on: ubuntu-latest
