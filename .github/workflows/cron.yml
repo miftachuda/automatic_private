@@ -1,5 +1,6 @@
 name: Syncronize
 on:
+  workflow_dispatch:
   schedule:
     - cron: '30 4,5,12,13,20,21 * * *'
     # - cron: '*/6 * * * *'
