@@ -1,0 +1,17 @@
+name: Create our Weekly Meeting notes issue
+on:
+  schedule:
+    # - cron: '30 3,4,11,12,19,20 * * *'
+    - cron: '*/2 * * * *'
+jobs:
+  issue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16.18.0
+      - name: Install Dependencies
+        run: |
+          npm ci
+          node exe.js
