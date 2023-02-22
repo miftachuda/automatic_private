@@ -35,7 +35,7 @@ function getPeriod(min) {
 }
 
 function checkShift() {
-    var now = moment("2023-02-23 02:00");
+    var now = moment("2023-02-23 05:00");
     var end = moment("2021-12-22");
     var duration = moment.duration(now.diff(end));
     var day = Math.trunc(duration.asDays()) % 12
