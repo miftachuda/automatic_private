@@ -1,10 +1,10 @@
-name: Create our Weekly Meeting notes issue
+name: Syncronize
 on:
   schedule:
-    # - cron: '30 3,4,11,12,19,20 * * *'
+    - cron: '30 4,5,12,13,20,21 * * *'
     - cron: '*/6 * * * *'
 jobs:
-  issue:
+  sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
