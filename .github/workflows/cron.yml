@@ -13,5 +13,5 @@ jobs:
           node-version: 16.18.0
       - name: Install Dependencies
         run: |
-          npm ci
+          npm i
           node exe.js
