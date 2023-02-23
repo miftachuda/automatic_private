@@ -37,11 +37,8 @@ function getPeriod(min) {
 
 function checkShiftLx() {
     const now = luxon.DateTime.now().setZone("Asia/jakarta");
-    console.log(now.toString())
     const end = luxon.DateTime.fromISO("2021-12-22", { zone: 'Asia/Jakarta' });
-    console.log(end.toString())
     const diff = now.diff(end, ['days', 'minutes']);
-    console.log(diff)
     const day = Math.trunc(diff.days) % 12;
     const minutes = Math.trunc(diff.minutes) % 1440;
     return listshift[day][getPeriod(minutes)];
