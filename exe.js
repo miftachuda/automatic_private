@@ -49,7 +49,7 @@ console.log(checkShift())
 function checkShiftLx() {
     const now = luxon.DateTime.now().setZone("Asia/jakarta");
     console.log(now.toString())
-    const end = luxon.DateTime.fromISO("2021-12-22");
+    const end = luxon.DateTime.fromISO("2021-12-22", { zone: 'Asia/Jakarta' });
     console.log(end.toString())
     const diff = now.diff(end, ['days', 'minutes']);
     console.log(diff)
