@@ -3,6 +3,7 @@ const lodash = require("lodash")
 const moment = require("moment")
 const axios = require('axios');
 const qs = require('qs');
+const luxon = require("luxon")
 require('colors');
 var lastvalue;
 var schedule;
@@ -42,6 +43,14 @@ function checkShift() {
     var minutes = Math.trunc(duration.asMinutes()) % 1440
     return listshift[day][getPeriod(minutes)];
 }
+function checkShiftLx() {
+    const now = luxon.DateTime.now().setZone("Asia/jakarta");
+    const end = luxon.DateTime.fromISO("2021-12-22");
+    const diff = now.diff(end, ['days', 'minutes']);
+    const day = Math.trunc(diff.days) % 12;
+    const minutes = Math.trunc(diff.minutes) % 1440;
+    return listshift[day][getPeriod(minutes)];
+}
 
 function checkShiftPeriod() {
     var hours = moment().hours()
@@ -57,6 +66,24 @@ function checkShiftPeriod() {
         return "16:00"
     } else return "20:00"
 }
+
+function checkShiftPeriodLx() {
+    const hours = luxon.DateTime.now().setZone("Asia/jakarta").hour;
+    if (hours < 4) {
+        return "00:00";
+    } else if (hours < 8) {
+        return "04:00";
+    } else if (hours < 12) {
+        return "08:00";
+    } else if (hours < 16) {
+        return "12:00";
+    } else if (hours < 20) {
+        return "16:00";
+    } else {
+        return "20:00";
+    }
+}
+
 async function callAxiosWithRetry(config, depth, failMassage) {
     const wait = (ms) => new Promise((res) => setTimeout(res, ms));
     try {
@@ -275,7 +302,7 @@ async function asyncForEach(array, callback) {
 }
 const proceed = async function (params) {
     var date = moment().format("YYYY-MM-DD").toString();
-    var waktu = checkShiftPeriod()
+    var waktu = checkShiftPeriodLx()
     var statentoken = await fire(params.username, params.password)
     function radomize() {
         function randomInteger(min, max) {
@@ -297,7 +324,8 @@ const proceed = async function (params) {
 }
 
 var runit = async function () {
-    var curshift = checkShift()
+    var curshift = checkShiftLx()
+    console.log(curshift)
     switch (curshift[0]) {
         case "X":
             console.log("No Task")
