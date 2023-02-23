@@ -38,16 +38,21 @@ function getPeriod(min) {
 function checkShift() {
     var now = moment("2023-02-23 05:00");
     var end = moment("2021-12-22");
+    console.log(end.toString())
     var duration = moment.duration(now.diff(end));
+    console.log(duration)
     var day = Math.trunc(duration.asDays()) % 12
     var minutes = Math.trunc(duration.asMinutes()) % 1440
     return listshift[day][getPeriod(minutes)];
 }
+console.log(checkShift())
 function checkShiftLx() {
     const now = luxon.DateTime.now().setZone("Asia/jakarta");
     console.log(now.hour)
     const end = luxon.DateTime.fromISO("2021-12-22").setZone("Asia/jakarta");
+    console.log(end.toString())
     const diff = now.diff(end, ['days', 'minutes']);
+    console.log(diff)
     const day = Math.trunc(diff.days) % 12;
     const minutes = Math.trunc(diff.minutes) % 1440;
     return listshift[day][getPeriod(minutes)];
