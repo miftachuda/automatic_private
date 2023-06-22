@@ -171,29 +171,29 @@ var filtering = function (state, unit, waktu, scanner, synctime) {
                 return true;
         })
         var tosend = filteredschedule.map(item => {
+            //radomize waktu antar tapping
             function radomize() {
                 function randomInteger(min, max) {
-                    return Math.floor(Math.random() * (max - min + 1) + min)
+                    return Math.floor(Math.random() * (max - min + 1) + min);
                 }
-                random = randomInteger(39, 120)
-                return random
+                random = randomInteger(39, 120);
+                return random;
             }
-            synctime = moment(synctime)
+            //synctime = luxon.DateTime.fromJSDate(synctime);
+
             function addSecond(date, second) {
-                return (date + (second * 1000))
+                return date.plus({ seconds: second });
             }
-            var lastvaluefilter = lodash(lastvalue).filter({ "idEquipment": item.idEquipment }).value()
+            var lastvaluefilter = lodash(lastvalue).filter({ "idEquipment": item.idEquipment }).value();
             var lastvaluefilterconcat = Object.keys(lastvaluefilter).reduce(function (arr, key) {
                 return arr.concat(lastvaluefilter[key]);
             }, []);
-
-            var addtoday = addSecond(synctime, radomize())
-            var date = moment(addtoday).format("YYYY-MM-DD HH:mm:ss").toString()
-            var jam = moment(addtoday).format("HH:mm:ss").toString()
-            synctime = addtoday
+            var addtoday = addSecond(synctime, radomize());
+            var date = addtoday.toFormat("yyyy-MM-dd HH:mm:ss");
+            var jam = addtoday.toFormat("HH:mm:ss");
+            synctime = addtoday;
 
             return lastvaluefilterconcat.map(param => {
-
                 return {
                     "idScheduleHistory": item.id,
                     "parentRecord": item.parentRecord,
@@ -205,8 +205,9 @@ var filtering = function (state, unit, waktu, scanner, synctime) {
                     "approved": 0,
                     "shift": jam,
                     "notesRecord": ""
-                }
-            })
+                };
+            });
+
 
         })
         var tosendconcat = Object.keys(tosend).reduce(function (arr, key) {
@@ -278,26 +279,35 @@ async function asyncForEach(array, callback) {
     }
 }
 const proceed = async function (params) {
-    var date = moment().format("YYYY-MM-DD").toString();
-    var waktu = checkShiftPeriodLx()
-    var statentoken = await fire(params.username, params.password)
+
+    var date = luxon.DateTime.local().toFormat("yyyy-MM-dd");
+    var waktu = checkShiftPeriodLx();
+
+    var statentoken = await fire(params.username, params.password);
+
+    //randomize waktu awal tapping
     function radomize() {
         function randomInteger(min, max) {
-            return Math.floor(Math.random() * (max - min + 1) + min)
+            return Math.floor(Math.random() * (max - min + 1) + min);
         }
-        random = randomInteger(900, 1700)
-        return random
+        random = randomInteger(900, 1700);
+        return random;
     }
+
     function getRandomTime(time) {
-        return moment(date + ' ' + time).add(radomize(), 'seconds').format("YYYY-MM-DD HH:mm:ss").toString()
+        return luxon.DateTime.fromFormat(date + ' ' + time, 'yyyy-MM-dd HH:mm')
+            .plus({ seconds: radomize() })
     }
-    var synctime = getRandomTime(waktu)
+    var synctime = getRandomTime(waktu);
+
     await asyncForEach(params.unit, async (param) => {
         await asyncForEach(param[1], async (unit) => {
-            console.log(statentoken[0], unit, waktu, param[0], synctime, statentoken[1])
-            await uploadscene(statentoken[0], unit, waktu, param[0], synctime, statentoken[1])
-        })
-    })
+            console.log(statentoken[0], unit, waktu, param[0], synctime
+                .toFormat("yyyy-MM-dd HH:mm:ss"), statentoken[1]);
+            await uploadscene(statentoken[0], unit, waktu, param[0], synctime, statentoken[1]);
+        });
+    });
+
 }
 
 var runit = async function () {
@@ -308,11 +318,11 @@ var runit = async function () {
             console.log("No Task")
             break;
         case "X":
-            proceed({
-                username: "allan.syahputra",
-                password: "Pertaminaru4",
-                unit: [["allan.syahputra", ["024"]]]
-            })
+            // proceed({
+            //     username: "allan.syahputra",
+            //     password: "Pertaminaru4",
+            //     unit: [["allan.syahputra", ["024"]]]
+            // })
             break;
         case "X":
             // proceed({
@@ -324,17 +334,17 @@ var runit = async function () {
         case "C":
             var params1 = {
                 username: "miftachul.huda",
-                password: "@syncfunti0n11",
-                unit: [["miftacuhl.huda", ["021", "022", "025"]]]
+                password: "Turnigy4/2023",
+                unit: [["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
             var params2 = {
                 username: "miftachul.huda",
-                password: "@syncfunti0n11",
-                unit: [["satrio.sarjono", ["021", "002"]], ["miftachul.huda", ["022", "025"]], ["ananta.s", ["023", "041"]], ["fani.wibowo", ["024"]]]
+                password: "Turnigy4/2023",
+                unit: [["miftachul.huda", ["002", "021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
-            proceed(params2)
+            proceed(params1)
             break;
         default:
             console.log("Error no shift match")
