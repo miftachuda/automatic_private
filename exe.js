@@ -347,7 +347,9 @@ var runit = async function () {
             proceed(params1)
             break;
         default:
-            console.log("Error no shift match")
+
+            console.log("Not On Shift, Exiting")
+            process.exit(1);
             break;
     }
 
