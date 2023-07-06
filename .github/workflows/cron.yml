@@ -2,8 +2,10 @@ name: Syncronize
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 3,5,11,13,19,21 * * *'
-    # - cron: '*/6 * * * *'
+    #          2 4  10 12 18 20 -7
+    - cron: 20 19,21,3,5,11,13 * * *
+  # - cron: '30 3,5,11,13,19,21 * * *'
+  # - cron: '*/6 * * * *'
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -14,5 +16,5 @@ jobs:
           node-version: 16.18.0
       - name: Install Dependencies
         run: npm i
-      - name: Running Script
+      - name: Running
         run: node exe.js
