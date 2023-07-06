@@ -13,6 +13,6 @@ jobs:
         with:
           node-version: 16.18.0
       - name: Install Dependencies
-        run: |
-          npm i
-          node exe.js
+        run: npm i
+      - name: Running Script
+        run: node exe.js

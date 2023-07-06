@@ -6,7 +6,10 @@ const luxon = require("luxon")
 require('colors');
 var lastvalue;
 var schedule;
-
+const currentDate = new Date();
+const options = { timeZone: 'Asia/Jakarta' };
+const formattedDate = currentDate.toLocaleString('en-US', options);
+console.log(formattedDate);
 const listshift =
     [
         ["A1 Malam", "B2 Pagi", "C3 Sore", "D Off Malam"],
@@ -315,9 +318,6 @@ var runit = async function () {
     console.log(curshift)
     switch (curshift[0]) {
         case "X":
-            console.log("No Task")
-            break;
-        case "X":
             // proceed({
             //     username: "allan.syahputra",
             //     password: "Pertaminaru4",
@@ -347,10 +347,8 @@ var runit = async function () {
             proceed(params1)
             break;
         default:
-
             console.log("Not On Shift, Exiting")
             process.exit(1);
-            break;
     }
 
 }
