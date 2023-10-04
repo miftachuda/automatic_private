@@ -333,14 +333,14 @@ var runit = async function () {
             break;
         case "C":
             var params1 = {
-                username: "miftachul.huda",
-                password: "Turnigy7/2023",
+                username: "fani.wibowo",
+                password: "Jakarta@2023",
                 unit: [["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
             var params2 = {
-                username: "miftachul.huda",
-                password: "Turnigy7/2023",
+                username: "fani.wibowo",
+                password: "Jakarta@2023",
                 unit: [["miftachul.huda", ["002", "021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
