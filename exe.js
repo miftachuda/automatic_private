@@ -344,7 +344,7 @@ var runit = async function () {
                 unit: [["miftachul.huda", ["002", "021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
-            proceed(params1)
+            proceed(params2)
             break;
         default:
             console.log("Not On Shift, Exiting")
