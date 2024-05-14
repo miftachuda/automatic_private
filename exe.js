@@ -253,10 +253,10 @@ async function sendMessage(message) {
 
     await axios(config)
         .then(function (response) {
-            console.log("Telegram message Sent");
+            console.log("Discord message Sent");
         })
         .catch(function (error) {
-            console.log("Failed sending Telegram message");
+            console.log("Failed sending Discord message");
             console.log(error)
         });
 }
@@ -267,7 +267,7 @@ async function sendDiscord(message) {
         method: 'post',
         url: discord,
         headers: {},
-        body: {
+        data: {
             content: message,
         }
     };
@@ -379,4 +379,5 @@ var runit = async function () {
 
 }
 
-runit()
+//runit()
+sendDiscord("test")
