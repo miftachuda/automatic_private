@@ -260,6 +260,28 @@ async function sendMessage(message) {
             console.log(error)
         });
 }
+const discord = "https://discord.com/api/webhooks/1239915749636571208/HLUPiWRsuCiDDHUzfe4AYb4E3gKNJTVUbE-tA1X5NR9Jpvi852qZI2lTjyuUbH_4XlyU"
+async function sendDiscord(message) {
+
+    var config = {
+        method: 'post',
+        url: discord,
+        headers: {},
+        body: {
+            content: message,
+        }
+    };
+
+    await axios(config)
+        .then(function (response) {
+            console.log("Telegram message Sent");
+        })
+        .catch(function (error) {
+            console.log("Failed sending Telegram message");
+            console.log(error)
+        });
+}
+
 var uploadscene = async function (state, unit, waktu, scanner, synctime, token) {
 
     var resultdata = filtering(state, unit, waktu, scanner, synctime)
@@ -267,12 +289,14 @@ var uploadscene = async function (state, unit, waktu, scanner, synctime, token) 
         await syncronize(resultdata[0], token, unit, waktu).then(async (x) => {
             console.log(`Upload ${Object.keys(resultdata[1]).length} Equip Record Unit ${unit} jam ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp.blue} user ${scanner} Messages : ${x.blue}`)
             // await sendMessage(`<b>${scanner}</b> Unit <b>${unit}</b> ${Object.keys(resultdata[1]).length} Equip Record ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp} :[${x}]`)
+            await sendDiscord(`${scanner} Unit ${unit} \n${Object.keys(resultdata[1]).length} Equip Record ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp} :[${x}]`)
         }).catch(() => {
             console.log("failed upload record")
         })
     } else {
         console.log("Data not available".red)
         //await sendMessage("No records available to send")
+        await sendDiscord("No records available to send")
     }
 
 }
