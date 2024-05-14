@@ -317,25 +317,26 @@ var runit = async function () {
     var curshift = checkShiftLx()
     console.log(curshift)
     switch (curshift[0]) {
-        case "X":
-            // proceed({
-            //     username: "allan.syahputra",
-            //     password: "Pertaminaru4",
-            //     unit: [["allan.syahputra", ["024"]]]
-            // })
-            break;
-        case "A":
+        case "Y":
             var params2 = {
                 username: "miftachul.huda",
-                password: "pertamina@2025",
+                password: "pertamina@2026",
+                unit: [["ubaidillah.shiddiq", ["002", "021", "022", "025"]], ["azhar.mawardi", ["023", "041"]], ["azhar.mawardi", ["024"]]]
+            }
+            proceed(params2)
+            break;
+        case "X":
+            var params2 = {
+                username: "miftachul.huda",
+                password: "pertamina@2026",
                 unit: [["ubaidillah.shiddiq", ["002", "021", "022", "025"]], ["azhar.mawardi", ["023", "041"]], ["azhar.mawardi", ["024"]]]
             }
             proceed(params2)
             break;
         case "C":
             var params1 = {
-                username: "fani.wibowo",
-                password: "Jakarta@2023",
+                username: "miftachul.huda",
+                password: "pertamina@2026",
                 unit: [["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
