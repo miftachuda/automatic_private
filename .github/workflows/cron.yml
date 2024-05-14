@@ -1,9 +1,9 @@
 name: Syncronize
 on:
   workflow_dispatch:
-  # schedule:
+  schedule:
     #          2 4  10 12 18 20 -7
-    # 1- cron: 20 19,21,3,5,11,13 * * *
+    - cron: 20 19,21,3,5,11,13 * * *
   # - cron: '30 3,5,11,13,19,21 * * *'
   # - cron: '*/6 * * * *'
 jobs:
