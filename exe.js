@@ -341,8 +341,13 @@ var runit = async function () {
 
             var params2 = {
                 username: "miftachul.huda",
+<<<<<<< HEAD
                 password: "pertamina@2026",
                 unit: [["satrio.sarjono", ["002", "021", "022", "025"]], ["aditya.kurniawan", ["023", "041"]], ["muhammad.erlangga", ["024"]]]
+=======
+                password: "pertamina@2025",
+                unit: [["satrio.sarjono", [ "002","021", "022", "025"]], ["muhammad.erlangga", ["023", "041"]], ["aditya.kurniawan", ["024"]]]
+>>>>>>> dafd4e03e175b945595184dda20d1159c034b9d4
             }
 
             proceed(params2)
