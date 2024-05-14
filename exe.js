@@ -253,10 +253,10 @@ async function sendMessage(message) {
 
     await axios(config)
         .then(function (response) {
-            console.log("Discord message Sent");
+            console.log("Telegram message Sent");
         })
         .catch(function (error) {
-            console.log("Failed sending Discord message");
+            console.log("Failed sending Telegram message");
             console.log(error)
         });
 }
@@ -274,10 +274,10 @@ async function sendDiscord(message) {
 
     await axios(config)
         .then(function (response) {
-            console.log("Telegram message Sent");
+            console.log("Discord message Sent");
         })
         .catch(function (error) {
-            console.log("Failed sending Telegram message");
+            console.log("Failed sending Discord message");
             console.log(error)
         });
 }
