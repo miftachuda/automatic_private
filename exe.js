@@ -379,5 +379,5 @@ var runit = async function () {
 
 }
 
-//runit()
-sendDiscord("test")
+runit()
+//sendDiscord("test")
