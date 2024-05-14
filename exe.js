@@ -266,13 +266,13 @@ var uploadscene = async function (state, unit, waktu, scanner, synctime, token) 
     if (resultdata[1] != null && resultdata[0] != null) {
         await syncronize(resultdata[0], token, unit, waktu).then(async (x) => {
             console.log(`Upload ${Object.keys(resultdata[1]).length} Equip Record Unit ${unit} jam ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp.blue} user ${scanner} Messages : ${x.blue}`)
-            await sendMessage(`<b>${scanner}</b> Unit <b>${unit}</b> ${Object.keys(resultdata[1]).length} Equip Record ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp} :[${x}]`)
+            // await sendMessage(`<b>${scanner}</b> Unit <b>${unit}</b> ${Object.keys(resultdata[1]).length} Equip Record ${waktu} date ${resultdata[0][resultdata[0].length - 1].timestamp} :[${x}]`)
         }).catch(() => {
             console.log("failed upload record")
         })
     } else {
         console.log("Data not available".red)
-        await sendMessage("No records available to send")
+        //await sendMessage("No records available to send")
     }
 
 }
@@ -324,12 +324,13 @@ var runit = async function () {
             //     unit: [["allan.syahputra", ["024"]]]
             // })
             break;
-        case "X":
-            // proceed({
-            //     username: "muhammad.aulya",
-            //     password: "Pertamina752906752",
-            //     unit: [["muhammad.aulya", ["021", "022", "025"]]]
-            // })
+        case "A":
+            var params2 = {
+                username: "miftachul.huda",
+                password: "pertamina@2025",
+                unit: [["ubaidillah.shiddiq", ["002", "021", "022", "025"]], ["azhar.mawardi", ["023", "041"]], ["azhar.mawardi", ["024"]]]
+            }
+            proceed(params2)
             break;
         case "C":
             var params1 = {
@@ -340,8 +341,8 @@ var runit = async function () {
 
             var params2 = {
                 username: "miftachul.huda",
-                password: "pertamina@2023",
-                unit: [["miftachul.huda", [ "021", "022", "025"]], ["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
+                password: "pertamina@2026",
+                unit: [["satrio.sarjono", ["002", "021", "022", "025"]], ["aditya.kurniawan", ["023", "041"]], ["muhammad.erlangga", ["024"]]]
             }
 
             proceed(params2)
