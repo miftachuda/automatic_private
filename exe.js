@@ -360,13 +360,13 @@ var runit = async function () {
         case "C":
             var params1 = {
                 username: "miftachul.huda",
-                password: "pertamina@2026",
+                password: "pertamina@2027",
                 unit: [["satrio.sarjono", ["023", "041"]], ["fani.wibowo", ["024"]]]
             }
 
             var params2 = {
                 username: "miftachul.huda",
-                password: "pertamina@2026",
+                password: "pertamina@2027",
                 unit: [["satrio.sarjono", ["002", "021", "022", "025"]], ["aditya.kurniawan", ["023", "041"]], ["muhammad.erlangga", ["024"]]]
             }
 
